@@ -1,0 +1,9 @@
+{
+  "name": "weather-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static weather page with a server-side OpenWeatherMap proxy in api/weather.js",
+  "engines": {
+    "node": ">=18"
+  }
+}
