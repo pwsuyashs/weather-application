@@ -5,8 +5,14 @@ const weatherbutton=document.querySelector(".sea button")
 const weathericon=document.querySelector(".weather-icon")
 
 async function checkweather(city){
-    const response= await fetch(apiurl+city+`&appid=${apikey}`);
+    const response= await fetch(apiurl+encodeURIComponent(city)+`&appid=${encodeURIComponent(apikey)}`);
+    if(!response.ok){
+        return;
+    }
     var data =  await response.json();
+    if(!data || !data.main || !data.wind || !Array.isArray(data.weather) || data.weather.length===0){
+        return;
+    }
     
 
     document.querySelector(".city").textContent = data.name;
