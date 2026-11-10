@@ -1,13 +1,33 @@
-const apiurl = "https://api.openweathermap.org/data/2.5/weather?units=metric&q=";
-const apikey="74dda9ad8a132d1dafbaa57f9b359f33";
+// Weather requests go through the same-origin server endpoint (server.js),
+// which adds the OpenWeatherMap API key on the server. No key in the browser.
+const apiurl = "/api/weather?q=";
 const searchbox=document.querySelector(".sea input")
 const weatherbutton=document.querySelector(".sea button")
 const weathericon=document.querySelector(".weather-icon")
 
+function showweathererror(message){
+    document.querySelector(".hide").style.display="none"
+    alert(message)
+}
+
 async function checkweather(city){
-    const response= await fetch(apiurl+city+`&appid=${apikey}`);
-    var data =  await response.json();
-    
+    let data;
+    try {
+        const response= await fetch(apiurl+encodeURIComponent(city));
+        if (!response.ok) {
+            showweathererror("Could not find weather for that city. Please check the name and try again.");
+            return;
+        }
+        data = await response.json();
+    } catch (err) {
+        showweathererror("Unable to load weather data right now. Please try again later.");
+        return;
+    }
+
+    if (!data || !data.main || !data.wind || !Array.isArray(data.weather) || data.weather.length === 0 || !data.weather[0]) {
+        showweathererror("Received incomplete weather data. Please try again.");
+        return;
+    }
 
     document.querySelector(".city").textContent = data.name;
     document.querySelector(".temp").textContent = Math.round(data.main.temp) + "°c";
