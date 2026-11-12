@@ -1,0 +1,4 @@
+# Never commit local secret configuration
+.env
+.env.*
+node_modules/
