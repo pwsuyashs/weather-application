@@ -5,8 +5,20 @@ const weatherbutton=document.querySelector(".sea button")
 const weathericon=document.querySelector(".weather-icon")
 
 async function checkweather(city){
-    const response= await fetch(apiurl+city+`&appid=${apikey}`);
-    var data =  await response.json();
+    let response, data;
+    try {
+        response = await fetch(apiurl + encodeURIComponent(city) + `&appid=${apikey}`);
+        data = await response.json();
+    } catch (err) {
+        document.querySelector(".hide").style.display = "none";
+        alert("Unable to fetch weather data. Please try again.");
+        return;
+    }
+    if (!response.ok || !data || !data.main || !data.wind || !Array.isArray(data.weather) || data.weather.length === 0) {
+        document.querySelector(".hide").style.display = "none";
+        alert("City not found. Please enter a valid city name.");
+        return;
+    }
     
 
     document.querySelector(".city").textContent = data.name;
