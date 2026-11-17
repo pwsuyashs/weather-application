@@ -1,13 +1,29 @@
-const apiurl = "https://api.openweathermap.org/data/2.5/weather?units=metric&q=";
-const apikey="74dda9ad8a132d1dafbaa57f9b359f33";
+// Weather data is fetched through the same-origin proxy in server.js,
+// which holds the OpenWeatherMap API key server-side (OPENWEATHER_API_KEY).
+const apiurl = "/api/weather?q=";
 const searchbox=document.querySelector(".sea input")
 const weatherbutton=document.querySelector(".sea button")
 const weathericon=document.querySelector(".weather-icon")
 
 async function checkweather(city){
-    const response= await fetch(apiurl+city+`&appid=${apikey}`);
-    var data =  await response.json();
-    
+    const response= await fetch(apiurl+encodeURIComponent(city));
+    let data = null;
+    try {
+        data = await response.json();
+    } catch (err) {
+        data = null;
+    }
+
+    if (!response.ok || !data || !data.main || !data.wind || !Array.isArray(data.weather) || !data.weather[0]) {
+        const message = (data && typeof data.message === "string") ? data.message : "city not found";
+        document.querySelector(".city").textContent = message;
+        document.querySelector(".temp").textContent = "--";
+        document.querySelector(".text").textContent = "--";
+        document.querySelector(".text2").textContent = "--";
+        weathericon.src = "image/weather.png";
+        document.querySelector(".hide").style.display="block";
+        return;
+    }
 
     document.querySelector(".city").textContent = data.name;
     document.querySelector(".temp").textContent = Math.round(data.main.temp) + "°c";
